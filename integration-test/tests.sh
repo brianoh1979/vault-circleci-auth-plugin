@@ -52,12 +52,12 @@ for i in 1 2 3 4 5; do
         attempt_cache_expiry="attempt_cache_expiry=5s"
     fi
 
-    docker exec vault vault write auth/circleci/config circleci_token=fake \
+    docker exec vault vault write auth/token/config circleci_token=fake \
             vcs_type=github owner=johnsmith ttl=5m max_ttl=15m \
             base_url=http://circle:7979 $attempt_cache_expiry
 
     response=$(docker exec vault vault write -format=json \
-            auth/circleci/login project=someproject build_num=100 \
+            auth/token/login project=someproject build_num=100 \
             vcs_revision=babababababababababababababababababababa 2>&1 || true)
 
     #sleep 1
@@ -76,7 +76,7 @@ for i in 1 2 3 4 5; do
         # Testing a second attempt at authenticating the same build
         response=$(docker exec vault \
                 vault write \
-                auth/circleci/login \
+                auth/token/login \
                 project=someproject \
                 build_num=100 \
                 vcs_revision=babababababababababababababababababababa 2>&1 || true)
@@ -92,7 +92,7 @@ for i in 1 2 3 4 5; do
         sleep 90s
 
         response=$(docker exec vault vault write -format=json \
-        auth/circleci/login project=someproject build_num=100 \
+        auth/token/login project=someproject build_num=100 \
         vcs_revision=babababababababababababababababababababa 2>&1 || true)
 
         [[ $(echo "$response" | jq -r '.auth.client_token' | wc -c) -gt 0 ]]
