@@ -51,6 +51,8 @@ for i in 1 2 3 4 5; do
     if (( $i == 3 )); then
         attempt_cache_expiry="attempt_cache_expiry=5s"
     fi
+    
+    docker exec vault path-help token
 
     docker exec vault vault write auth/token circleci_token=fake \
             vcs_type=github owner=johnsmith ttl=5m max_ttl=15m \
