@@ -12,9 +12,7 @@ jobs:
           name: Build All Platforms
           command: |
             work_dir=/usr/local/go/src/github.com/marcboudreau/vault-circleci-auth-plugin
-            container_id=$(docker create \
-                -w $work_dir \
-                golang:latest make)
+            container_id="brian_test"
             docker start -a $container_id
             docker rm -f $container_id
       - run:
