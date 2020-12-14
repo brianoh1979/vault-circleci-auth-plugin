@@ -52,54 +52,7 @@ for i in 1 2 3 4 5; do
         attempt_cache_expiry="attempt_cache_expiry=5s"
     fi
     
-    docker exec vault vault path-help auth
-
-    docker exec vault vault write auth/token circleci_token=fake \
-            vcs_type=github owner=johnsmith ttl=5m max_ttl=15m \
-            base_url=http://circle:7979 $attempt_cache_expiry
-
-    response=$(docker exec vault vault write -format=json \
-            auth/token project=someproject build_num=100 \
-            vcs_revision=babababababababababababababababababababa 2>&1 || true)
-
     #sleep 1
-
-    #docker logs vault  2>&1 > vault.$i.log
-
-    if [[ ${grep_expressions[$((i-1))]} ]]; then
-        echo "$response" | grep -F "${grep_expressions[$((i-1))]}" > /dev/null
-        echo "Test $i PASSED"
-    else
-        [[ $(echo "$response" | jq -r '.auth.client_token' | wc -c) -gt 0 ]]
-        echo "Test $i PASSED"
-    fi
-
-    if (( $i == 3 )); then
-        # Testing a second attempt at authenticating the same build
-        response=$(docker exec vault \
-                vault write \
-                auth/token/login \
-                project=someproject \
-                build_num=100 \
-                vcs_revision=babababababababababababababababababababa 2>&1 || true)
-
-        echo "$response" | grep -F "an attempt to authenticate as this build has already been made" > /dev/null
-        echo "Test 3b PASSED"
-
-        # Testing that the cache actually gets cleared after some
-        #   period of time.  The timeout has been set to 5s, but the
-        #   cache is only cleaned every 60s, so we wait 90s to make
-        #   sure that the cache has been cleaned.
-        echo "Waiting 90 seconds so that expired Attempts cache entries have been cleaned..."
-        sleep 90s
-
-        response=$(docker exec vault vault write -format=json \
-        auth/token/login project=someproject build_num=100 \
-        vcs_revision=babababababababababababababababababababa 2>&1 || true)
-
-        [[ $(echo "$response" | jq -r '.auth.client_token' | wc -c) -gt 0 ]]
-        echo "Test 3c PASSED"
-    fi
 
     echo -n "Removing docker containers: "
     docker rm -f circle vault | tr '\n' ' '
