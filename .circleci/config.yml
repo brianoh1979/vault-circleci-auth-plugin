@@ -26,15 +26,10 @@ jobs:
           name: Release
           command: |
             if [[ $CIRCLE_BRANCH == "master" ]]; then
-              RELEASE=$(curl -s \
-                          https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/commits/$CIRCLE_SHA1 \
-                          | jq .commit.message \
-                          | sed -n 's/.*\[release \(.*\)\].*/\1/p')
-              export RELEASE=${RELEASE:-patch}
-              make release
+              RELEASE=$$CIRCLE_SHA1 
 
-              docker tag vault-circleci-auth-plugin:test marcboudreau/vault-circleci-auth-plugin:$(git semver get)
-              docker tag vault-circleci-auth-plugin:test marcboudreau/vault-circleci-auth-plugin:latest
+              docker tag vault-circleci-auth-plugin:test brianoh1979/vault-circleci-auth-plugin:$RELEASE
+              docker tag vault-circleci-auth-plugin:test brianoh1979/vault-circleci-auth-plugin:latest
 
               echo $DOCKER_PASSWORD | docker login -u $DOCKER_USER --password-stdin
               docker push brianoh1979/vault-circleci-auth-plugin
