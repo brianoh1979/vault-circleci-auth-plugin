@@ -8,13 +8,13 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run:
-          name: Build All Platforms
-          command: |
-            work_dir=/usr/local/go/src/github.com/marcboudreau/vault-circleci-auth-plugin
-            container_id="brian_test"
-            docker start -a $container_id
-            docker rm -f $container_id
+#      - run:
+#          name: Build All Platforms
+#          command: |
+#            work_dir=/usr/local/go/src/github.com/marcboudreau/vault-circleci-auth-plugin
+#            container_id="brian_test"
+#            docker start -a $container_id
+#            docker rm -f $container_id
       - run:
           name: Building Docker Image
           command: |
@@ -37,5 +37,5 @@ jobs:
               docker tag vault-circleci-auth-plugin:test marcboudreau/vault-circleci-auth-plugin:latest
 
               echo $DOCKER_PASSWORD | docker login -u $DOCKER_USER --password-stdin
-              docker push marcboudreau/vault-circleci-auth-plugin
+              docker push brianoh1979/vault-circleci-auth-plugin
             fi
