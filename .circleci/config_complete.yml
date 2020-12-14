@@ -15,7 +15,9 @@ jobs:
             container_id=$(docker create \
                 -w $work_dir \
                 golang:latest make)
+#            docker cp . $container_id:$work_dir
             docker start -a $container_id
+#            docker cp $container_id:$work_dir/bin ./
             docker rm -f $container_id
       - run:
           name: Building Docker Image
