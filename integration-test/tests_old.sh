@@ -43,7 +43,7 @@ for i in 1 2 3 4 5; do
             -e VAULT_LOG_LEVEL=trace \
             vault-circleci-auth-plugin:test
 
-    while ! docker exec vault vault auth list; do
+    while ! docker exec vault vault auth list | grep 'circleci/' > /dev/null ; do
         echo "Still waiting for Vault server to finish initializing..."
     done
 
