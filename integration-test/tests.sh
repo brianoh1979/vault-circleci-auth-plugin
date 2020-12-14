@@ -52,12 +52,12 @@ for i in 1 2 3 4 5; do
         attempt_cache_expiry="attempt_cache_expiry=5s"
     fi
 
-    docker exec vault vault write auth/token/config circleci_token=fake \
+    docker exec vault vault write auth/token circleci_token=fake \
             vcs_type=github owner=johnsmith ttl=5m max_ttl=15m \
             base_url=http://circle:7979 $attempt_cache_expiry
 
     response=$(docker exec vault vault write -format=json \
-            auth/token/login project=someproject build_num=100 \
+            auth/token project=someproject build_num=100 \
             vcs_revision=babababababababababababababababababababa 2>&1 || true)
 
     #sleep 1
